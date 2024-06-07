@@ -25,19 +25,24 @@ namespace Mango.Web.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            LoginRequestDto loginRequestDto = new();
+            LoginRequest loginRequestDto = new();
             return View(loginRequestDto);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginRequestDto obj)
+        public async Task<IActionResult> Login(LoginRequest model)
         {
-            ResponseDto responseDto = await _authService.LoginAsync(obj);
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            ResponseDto responseDto = await _authService.LoginAsync(model);
 
             if (responseDto != null && responseDto.IsSuccess)
             {
-                LoginResponseDto loginResponseDto = 
-                    JsonConvert.DeserializeObject<LoginResponseDto>(Convert.ToString(responseDto.Result));
+                LoginResponse loginResponseDto = 
+                    JsonConvert.DeserializeObject<LoginResponse>(Convert.ToString(responseDto.Result));
 
                 await SignInUser(loginResponseDto);
                 _tokenProvider.SetToken(loginResponseDto.Token);
@@ -46,18 +51,17 @@ namespace Mango.Web.Controllers
             else
             {
                 TempData["error"] = responseDto.Message;
-                return View(obj);
+                return View(model);
             }
         }
-
-
+        
         [HttpGet]
         public IActionResult Register()
         {
             var roleList = new List<SelectListItem>()
             {
-                new SelectListItem{Text=SD.RoleAdmin,Value=SD.RoleAdmin},
-                new SelectListItem{Text=SD.RoleCustomer,Value=SD.RoleCustomer},
+                new SelectListItem{Text=Constants.RoleAdmin,Value=Constants.RoleAdmin},
+                new SelectListItem{Text=Constants.RoleCustomer,Value=Constants.RoleCustomer},
             };
 
             ViewBag.RoleList = roleList;
@@ -65,18 +69,24 @@ namespace Mango.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(RegistrationRequestDto obj)
+        public async Task<IActionResult> Register(RegisterRequest model)
         {
-            ResponseDto result = await _authService.RegisterAsync(obj);
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            ResponseDto result = await _authService.RegisterAsync(model);
             ResponseDto assingRole;
 
             if(result!=null && result.IsSuccess)
             {
-                if (string.IsNullOrEmpty(obj.Role))
+                if (string.IsNullOrEmpty(model.Role))
                 {
-                    obj.Role = SD.RoleCustomer;
+                    model.Role = Constants.RoleCustomer;
                 }
-                assingRole = await _authService.AssignRoleAsync(obj);
+                
+                assingRole = await _authService.AssignRoleAsync(new AssignRoleRequest() { Email = model.Email, Role = model.Role });
                 if (assingRole!=null && assingRole.IsSuccess)
                 {
                     TempData["success"] = "Registration Successful";
@@ -90,12 +100,12 @@ namespace Mango.Web.Controllers
 
             var roleList = new List<SelectListItem>()
             {
-                new SelectListItem{Text=SD.RoleAdmin,Value=SD.RoleAdmin},
-                new SelectListItem{Text=SD.RoleCustomer,Value=SD.RoleCustomer},
+                new SelectListItem{Text=Constants.RoleAdmin,Value=Constants.RoleAdmin},
+                new SelectListItem{Text=Constants.RoleCustomer,Value=Constants.RoleCustomer},
             };
 
             ViewBag.RoleList = roleList;
-            return View(obj);
+            return View(model);
         }
 
 
@@ -107,7 +117,7 @@ namespace Mango.Web.Controllers
         }
 
 
-        private async Task SignInUser(LoginResponseDto model)
+        private async Task SignInUser(LoginResponse model)
         {
             var handler = new JwtSecurityTokenHandler();
 
@@ -126,10 +136,9 @@ namespace Mango.Web.Controllers
                 jwt.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Email).Value));
             identity.AddClaim(new Claim(ClaimTypes.Role,
                 jwt.Claims.FirstOrDefault(u => u.Type == "role").Value));
-
-
-
+            
             var principal = new ClaimsPrincipal(identity);
+            
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
         }
 

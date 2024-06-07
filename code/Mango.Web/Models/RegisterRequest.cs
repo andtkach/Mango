@@ -2,7 +2,7 @@
 
 namespace Mango.Web.Models
 {
-    public class RegistrationRequestDto
+    public class RegisterRequest
     {
         [Required]
         public string Email { get; set; }

@@ -1,5 +1,4 @@
 ﻿using Mango.Services.AuthAPI.Models;
-using Mango.Services.AuthAPI.Service.IService;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

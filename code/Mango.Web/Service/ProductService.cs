@@ -16,10 +16,10 @@ namespace Mango.Web.Service
         {
             return await _baseService.SendAsync(new RequestDto()
             {
-                ApiType = SD.ApiType.POST,
+                ApiType = Constants.ApiType.POST,
                 Data=productDto,
-                Url = SD.ProductAPIBase + "/api/product" ,
-                ContentType = SD.ContentType.MultipartFormData
+                Url = Constants.ProductAPIBase + "/api/product" ,
+                ContentType = Constants.ContentType.MultipartFormData
             });
         }
 
@@ -27,8 +27,8 @@ namespace Mango.Web.Service
         {
             return await _baseService.SendAsync(new RequestDto()
             {
-                ApiType = SD.ApiType.DELETE,
-                Url = SD.ProductAPIBase + "/api/product/" + id
+                ApiType = Constants.ApiType.DELETE,
+                Url = Constants.ProductAPIBase + "/api/product/" + id
             }); 
         }
 
@@ -36,8 +36,8 @@ namespace Mango.Web.Service
         {
             return await _baseService.SendAsync(new RequestDto()
             {
-                ApiType = SD.ApiType.GET,
-                Url = SD.ProductAPIBase + "/api/product"
+                ApiType = Constants.ApiType.GET,
+                Url = Constants.ProductAPIBase + "/api/product"
             });
         }
 
@@ -47,8 +47,8 @@ namespace Mango.Web.Service
         {
             return await _baseService.SendAsync(new RequestDto()
             {
-                ApiType = SD.ApiType.GET,
-                Url = SD.ProductAPIBase + "/api/product/" + id
+                ApiType = Constants.ApiType.GET,
+                Url = Constants.ProductAPIBase + "/api/product/" + id
             });
         }
 
@@ -56,10 +56,10 @@ namespace Mango.Web.Service
         {
             return await _baseService.SendAsync(new RequestDto()
             {
-                ApiType = SD.ApiType.PUT,
+                ApiType = Constants.ApiType.PUT,
                 Data = productDto,
-                Url = SD.ProductAPIBase + "/api/product",
-                ContentType = SD.ContentType.MultipartFormData
+                Url = Constants.ProductAPIBase + "/api/product",
+                ContentType = Constants.ContentType.MultipartFormData
             });
         }
     }

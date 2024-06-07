@@ -1,6 +1,6 @@
 ﻿using Mango.MessageBus;
 using Mango.Services.AuthAPI.Models.Dto;
-using Mango.Services.AuthAPI.Service.IService;
+using Mango.Services.AuthAPI.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,7 +26,7 @@ namespace Mango.Services.AuthAPI.Controllers
 
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegistrationRequestDto model)
+        public async Task<IActionResult> Register([FromBody] RegisterRequest model)
         {
 
             var errorMessage = await _authService.Register(model);
@@ -36,39 +36,58 @@ namespace Mango.Services.AuthAPI.Controllers
                 _response.Message= errorMessage;
                 return BadRequest(_response);
             }
-            await _messageBus.PublishMessage(model.Email, _configuration.GetValue<string>("TopicAndQueueNames:RegisterUserQueue"));
-                return Ok(_response);
+
+            if (_configuration.GetValue<bool>("NotifyAzure") == true)
+            {
+                await _messageBus.PublishMessage(model.Email,
+                    _configuration.GetValue<string>("TopicAndQueueNames:RegisterUserQueue"));
+            }
+
+            return Ok(_response);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequestDto model)
+        public async Task<IActionResult> Login([FromBody] LoginRequest model)
         {
             var loginResponse = await _authService.Login(model);
+            
             if (loginResponse.User == null)
             {
                 _response.IsSuccess = false;
                 _response.Message = "Username or password is incorrect";
                 return BadRequest(_response);
             }
+            
             _response.Result = loginResponse;
-            return Ok(_response);
 
+            if (_configuration.GetValue<bool>("NotifyAzure") == true)
+            {
+                await _messageBus.PublishMessage(model.UserName,
+                    _configuration.GetValue<string>("TopicAndQueueNames:LoginUserQueue"));
+            }
+
+            return Ok(_response);
         }
 
         [HttpPost("assignrole")]
-        public async Task<IActionResult> AssignRole([FromBody] RegistrationRequestDto model)
+        public async Task<IActionResult> AssignRole([FromBody] AssignRoleRequest model)
         {
-            var assignRoleSuccessful = await _authService.AssignRole(model.Email,model.Role.ToUpper());
+            var assignRoleSuccessful = await _authService.AssignRole(model.Email, model.Role.ToUpper());
+            
             if (!assignRoleSuccessful)
             {
                 _response.IsSuccess = false;
                 _response.Message = "Error encountered";
                 return BadRequest(_response);
             }
+
+            if (_configuration.GetValue<bool>("NotifyAzure") == true)
+            {
+                await _messageBus.PublishMessage(model.Email,
+                    _configuration.GetValue<string>("TopicAndQueueNames:AssignRoleQueue"));
+            }
+
             return Ok(_response);
-
         }
-
-
     }
 }

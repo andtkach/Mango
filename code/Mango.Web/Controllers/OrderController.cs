@@ -34,7 +34,7 @@ namespace Mango.Web.Controllers
 			{
 				orderHeaderDto = JsonConvert.DeserializeObject<OrderHeaderDto>(Convert.ToString(response.Result));
 			}
-			if(!User.IsInRole(SD.RoleAdmin) && userId!= orderHeaderDto.UserId)
+			if(!User.IsInRole(Constants.RoleAdmin) && userId!= orderHeaderDto.UserId)
             {
                 return NotFound();
             }
@@ -44,7 +44,7 @@ namespace Mango.Web.Controllers
         [HttpPost("OrderReadyForPickup")]
         public async Task<IActionResult> OrderReadyForPickup(int orderId)
         {
-            var response = await _orderService.UpdateOrderStatus(orderId,SD.Status_ReadyForPickup);
+            var response = await _orderService.UpdateOrderStatus(orderId,Constants.Status_ReadyForPickup);
             if (response != null && response.IsSuccess)
             {
                 TempData["success"] = "Status updated successfully";
@@ -56,7 +56,7 @@ namespace Mango.Web.Controllers
         [HttpPost("CompleteOrder")]
         public async Task<IActionResult> CompleteOrder(int orderId)
         {
-            var response = await _orderService.UpdateOrderStatus(orderId, SD.Status_Completed);
+            var response = await _orderService.UpdateOrderStatus(orderId, Constants.Status_Completed);
             if (response != null && response.IsSuccess)
             {
                 TempData["success"] = "Status updated successfully";
@@ -68,7 +68,7 @@ namespace Mango.Web.Controllers
         [HttpPost("CancelOrder")]
         public async Task<IActionResult> CancelOrder(int orderId)
         {
-            var response = await _orderService.UpdateOrderStatus(orderId, SD.Status_Cancelled);
+            var response = await _orderService.UpdateOrderStatus(orderId, Constants.Status_Cancelled);
             if (response != null && response.IsSuccess)
             {
                 TempData["success"] = "Status updated successfully";
@@ -83,7 +83,7 @@ namespace Mango.Web.Controllers
         {
             IEnumerable<OrderHeaderDto> list;
             string userId = "";
-            if (!User.IsInRole(SD.RoleAdmin))
+            if (!User.IsInRole(Constants.RoleAdmin))
             {
                 userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
             }
@@ -94,13 +94,13 @@ namespace Mango.Web.Controllers
                 switch (status)
                 {
                     case "approved":
-                        list = list.Where(u => u.Status == SD.Status_Approved);
+                        list = list.Where(u => u.Status == Constants.Status_Approved);
                         break;
 					case "readyforpickup":
-						list = list.Where(u => u.Status == SD.Status_ReadyForPickup);
+						list = list.Where(u => u.Status == Constants.Status_ReadyForPickup);
 						break;
 					case "cancelled":
-						list = list.Where(u => u.Status == SD.Status_Cancelled || u.Status == SD.Status_Refunded);
+						list = list.Where(u => u.Status == Constants.Status_Cancelled || u.Status == Constants.Status_Refunded);
 						break;
 					default:
 						break;

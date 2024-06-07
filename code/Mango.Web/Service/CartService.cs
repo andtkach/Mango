@@ -16,9 +16,9 @@ namespace Mango.Web.Service
         {
             return await _baseService.SendAsync(new RequestDto()
             {
-                ApiType = SD.ApiType.POST,
+                ApiType = Constants.ApiType.POST,
                 Data = cartDto,
-                Url = SD.ShoppingCartAPIBase + "/api/cart/ApplyCoupon"
+                Url = Constants.ShoppingCartAPIBase + "/api/cart/ApplyCoupon"
             });
         }
 
@@ -26,9 +26,9 @@ namespace Mango.Web.Service
         {
             return await _baseService.SendAsync(new RequestDto()
             {
-                ApiType = SD.ApiType.POST,
+                ApiType = Constants.ApiType.POST,
                 Data = cartDto,
-                Url = SD.ShoppingCartAPIBase + "/api/cart/EmailCartRequest"
+                Url = Constants.ShoppingCartAPIBase + "/api/cart/EmailCartRequest"
             });
         }
 
@@ -36,8 +36,8 @@ namespace Mango.Web.Service
         {
             return await _baseService.SendAsync(new RequestDto()
             {
-                ApiType = SD.ApiType.GET,
-                Url = SD.ShoppingCartAPIBase + "/api/cart/GetCart/"+ userId
+                ApiType = Constants.ApiType.GET,
+                Url = Constants.ShoppingCartAPIBase + "/api/cart/GetCart/"+ userId
             });
         }
 
@@ -46,9 +46,9 @@ namespace Mango.Web.Service
         {
             return await _baseService.SendAsync(new RequestDto()
             {
-                ApiType = SD.ApiType.POST,
+                ApiType = Constants.ApiType.POST,
                 Data = cartDetailsId,
-                Url = SD.ShoppingCartAPIBase + "/api/cart/RemoveCart"
+                Url = Constants.ShoppingCartAPIBase + "/api/cart/RemoveCart"
             });
         }
 
@@ -57,9 +57,9 @@ namespace Mango.Web.Service
         {
             return await _baseService.SendAsync(new RequestDto()
             {
-                ApiType = SD.ApiType.POST,
+                ApiType = Constants.ApiType.POST,
                 Data = cartDto,
-                Url = SD.ShoppingCartAPIBase + "/api/cart/CartUpsert"
+                Url = Constants.ShoppingCartAPIBase + "/api/cart/CartUpsert"
             });
         }
     }
