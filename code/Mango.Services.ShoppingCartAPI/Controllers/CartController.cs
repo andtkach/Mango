@@ -1,19 +1,17 @@
 ﻿using AutoMapper;
 using Mango.MessageBus;
-using Mango.Services.ShoppingCartAPI.Data;
-using Mango.Services.ShoppingCartAPI.Models;
-using Mango.Services.ShoppingCartAPI.Models.Dto;
-using Mango.Services.ShoppingCartAPI.Service.IService;
-using Microsoft.AspNetCore.Http;
+using Mango.Services.CartAPI.Data;
+using Mango.Services.CartAPI.Models;
+using Mango.Services.CartAPI.Models.Dto;
+using Mango.Services.CartAPI.Service.IService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.PortableExecutable;
 
-namespace Mango.Services.ShoppingCartAPI.Controllers
+namespace Mango.Services.CartAPI.Controllers
 {
     [Route("api/cart")]
     [ApiController]
-    public class CartAPIController : ControllerBase
+    public class CartController : ControllerBase
     {
         private ResponseDto _response;
         private IMapper _mapper;
@@ -22,7 +20,8 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
         private ICouponService _couponService;
         private IConfiguration _configuration;
         private readonly IMessageBus _messageBus;
-        public CartAPIController(AppDbContext db,
+
+        public CartController(AppDbContext db,
             IMapper mapper, IProductService productService, ICouponService couponService,IMessageBus messageBus, IConfiguration configuration)
         {
             _db = db;
@@ -33,6 +32,7 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
             _couponService = couponService;
             _configuration = configuration;
         }
+
         [HttpGet("GetCart/{userId}")]
         public async Task<ResponseDto> GetCart(string userId)
         {
@@ -99,7 +99,7 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
         {
             try
             {
-                await _messageBus.PublishMessage(cartDto, _configuration.GetValue<string>("TopicAndQueueNames:EmailShoppingCartQueue"));
+                await _messageBus.PublishMessage(cartDto, _configuration.GetValue<string>("TopicAndQueueNames:EmailCartQueue"));
                 _response.Result = true;
             }
             catch (Exception ex)

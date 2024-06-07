@@ -2,7 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace Mango.Services.ShoppingCartAPI.Extensions
+namespace Mango.Services.CartAPI.Extensions
 {
     public static class WebApplicationBuilderExtensions
     {

@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Mango.Services.ShoppingCartAPI.Models.Dto;
-using Mango.Services.ShoppingCartAPI.Models;
+using Mango.Services.CartAPI.Models.Dto;
+using Mango.Services.CartAPI.Models;
 
-namespace Mango.Services.ShoppingCartAPI
+namespace Mango.Services.CartAPI
 {
     public class MappingConfig
     {

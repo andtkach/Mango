@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace Mango.Services.ShoppingCartAPI.Migrations
+namespace Mango.Services.CartAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class AddShoppingCartTables : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

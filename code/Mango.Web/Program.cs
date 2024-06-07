@@ -17,7 +17,7 @@ builder.Services.AddHttpClient<IOrderService, OrderService>();
 
 Constants.CouponAPIBase = builder.Configuration["ServiceUrls:CouponAPI"];
 Constants.OrderAPIBase= builder.Configuration["ServiceUrls:OrderAPI"];
-Constants.ShoppingCartAPIBase = builder.Configuration["ServiceUrls:ShoppingCartAPI"];
+Constants.CartAPIBase = builder.Configuration["ServiceUrls:CartAPI"];
 Constants.AuthAPIBase = builder.Configuration["ServiceUrls:AuthAPI"];
 Constants.ProductAPIBase= builder.Configuration["ServiceUrls:ProductAPI"];
 

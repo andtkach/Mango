@@ -1,11 +1,11 @@
 using AutoMapper;
 using Mango.MessageBus;
-using Mango.Services.ShoppingCartAPI;
-using Mango.Services.ShoppingCartAPI.Data;
-using Mango.Services.ShoppingCartAPI.Extensions;
-using Mango.Services.ShoppingCartAPI.Service;
-using Mango.Services.ShoppingCartAPI.Service.IService;
-using Mango.Services.ShoppingCartAPI.Utility;
+using Mango.Services.CartAPI;
+using Mango.Services.CartAPI.Data;
+using Mango.Services.CartAPI.Extensions;
+using Mango.Services.CartAPI.Service;
+using Mango.Services.CartAPI.Service.IService;
+using Mango.Services.CartAPI.Utility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -91,7 +91,7 @@ void ApplyMigration()
     {
         var _db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        if (_db.Database.GetPendingMigrations().Count() > 0)
+        if (_db.Database.GetPendingMigrations().Any())
         {
             _db.Database.Migrate();
         }
