@@ -14,6 +14,7 @@ namespace Mango.Services.AuthAPI.Controllers
         private readonly IMessageBus _messageBus;
         private readonly IConfiguration _configuration;
         protected ResponseDto _response;
+
         public AuthController(IAuthService authService,IMessageBus messageBus, IConfiguration configuration)
         {
             _authService = authService;
@@ -54,7 +55,7 @@ namespace Mango.Services.AuthAPI.Controllers
 
         }
 
-        [HttpPost("AssignRole")]
+        [HttpPost("assignrole")]
         public async Task<IActionResult> AssignRole([FromBody] RegistrationRequestDto model)
         {
             var assignRoleSuccessful = await _authService.AssignRole(model.Email,model.Role.ToUpper());

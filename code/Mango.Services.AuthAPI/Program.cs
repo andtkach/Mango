@@ -13,6 +13,7 @@ builder.Services.AddDbContext<AppDbContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("ApiSettings:JwtOptions"));
 builder.Services.AddIdentity<ApplicationUser,IdentityRole>().AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
@@ -37,6 +38,7 @@ app.UseSwaggerUI(c =>
     }
 });
 app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -48,11 +50,11 @@ void ApplyMigration()
 {
     using (var scope = app.Services.CreateScope())
     {
-        var _db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        if (_db.Database.GetPendingMigrations().Count() > 0)
+        if (db.Database.GetPendingMigrations().Any())
         {
-            _db.Database.Migrate();
+            db.Database.Migrate();
         }
     }
 }

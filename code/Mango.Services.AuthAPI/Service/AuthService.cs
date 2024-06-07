@@ -57,7 +57,7 @@ namespace Mango.Services.AuthAPI.Service
             UserDto userDTO = new()
             {
                 Email = user.Email,
-                ID = user.Id,
+                Id = user.Id,
                 Name = user.Name,
                 PhoneNumber = user.PhoneNumber
             };
@@ -92,7 +92,7 @@ namespace Mango.Services.AuthAPI.Service
                     UserDto userDto = new()
                     {
                         Email = userToReturn.Email,
-                        ID = userToReturn.Id,
+                        Id = userToReturn.Id,
                         Name = userToReturn.Name,
                         PhoneNumber = userToReturn.PhoneNumber
                     };
