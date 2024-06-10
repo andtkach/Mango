@@ -16,7 +16,7 @@ namespace Mango.Services.OrderAPI.Controllers
 {
     [Route("api/order")]
     [ApiController]
-    public class OrderAPIController : ControllerBase
+    public class OrderController : ControllerBase
     {
         protected ResponseDto _response;
         private IMapper _mapper;
@@ -24,9 +24,10 @@ namespace Mango.Services.OrderAPI.Controllers
         private IProductService _productService;
         private readonly IMessageBus _messageBus;
         private readonly IConfiguration _configuration;
-        public OrderAPIController(AppDbContext db,
-            IProductService productService, IMapper mapper, IConfiguration configuration
-            ,IMessageBus messageBus)
+
+        public OrderController(AppDbContext db,
+            IProductService productService, IMapper mapper, IConfiguration configuration,
+            IMessageBus messageBus)
         {
             _db = db;
             _messageBus = messageBus;
@@ -43,7 +44,7 @@ namespace Mango.Services.OrderAPI.Controllers
             try
             {
                 IEnumerable<OrderHeader> objList;
-                if (User.IsInRole(SD.RoleAdmin))
+                if (User.IsInRole(Constants.RoleAdmin))
                 {
                     objList = _db.OrderHeaders.Include(u => u.OrderDetails).OrderByDescending(u => u.OrderHeaderId).ToList();
                 }
@@ -88,7 +89,7 @@ namespace Mango.Services.OrderAPI.Controllers
             {
                 OrderHeaderDto orderHeaderDto = _mapper.Map<OrderHeaderDto>(cartDto.CartHeader);
                 orderHeaderDto.OrderTime = DateTime.Now;
-                orderHeaderDto.Status = SD.Status_Pending;
+                orderHeaderDto.Status = Constants.Status_Pending;
                 orderHeaderDto.OrderDetails = _mapper.Map<IEnumerable<OrderDetailsDto>>(cartDto.CartDetails);
                 orderHeaderDto.OrderTotal = Math.Round(orderHeaderDto.OrderTotal, 2);
                 OrderHeader orderCreated = _db.OrderHeaders.Add(_mapper.Map<OrderHeader>(orderHeaderDto)).Entity;
@@ -190,7 +191,7 @@ namespace Mango.Services.OrderAPI.Controllers
                 {
                     //then payment was successful
                     orderHeader.PaymentIntentId = paymentIntent.Id;
-                    orderHeader.Status = SD.Status_Approved;
+                    orderHeader.Status = Constants.Status_Approved;
                     _db.SaveChanges();
                     RewardsDto rewardsDto = new()
                     {
@@ -222,7 +223,7 @@ namespace Mango.Services.OrderAPI.Controllers
                 OrderHeader orderHeader = _db.OrderHeaders.First(u => u.OrderHeaderId == orderId);
                 if (orderHeader != null)
                 {
-                    if(newStatus == SD.Status_Cancelled)
+                    if(newStatus == Constants.Status_Cancelled)
                     {
                         //we will give refund
                         var options = new RefundCreateOptions

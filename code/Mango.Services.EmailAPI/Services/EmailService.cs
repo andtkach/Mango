@@ -9,11 +9,13 @@ namespace Mango.Services.EmailAPI.Services
 {
     public class EmailService : IEmailService
     {
-        private DbContextOptions<AppDbContext> _dbOptions;
+        private readonly DbContextOptions<AppDbContext> _dbOptions;
+        private readonly IConfiguration _configuration;
 
-        public EmailService(DbContextOptions<AppDbContext> dbOptions)
+        public EmailService(DbContextOptions<AppDbContext> dbOptions, IConfiguration configuration)
         {
             _dbOptions = dbOptions;
+            _configuration = configuration;
         }
 
         public async Task EmailCartAndLog(CartDto cartDto)
@@ -38,13 +40,13 @@ namespace Mango.Services.EmailAPI.Services
         public async Task LogOrderPlaced(RewardsMessage rewardsDto)
         {
             string message = "New Order Placed. <br/> Order ID : " + rewardsDto.OrderId;
-            await LogAndEmail(message, "dotnetmastery@gmail.com");
+            await LogAndEmail(message, _configuration.GetValue<string>("AdminEmail"));
         }
 
         public async Task RegisterUserEmailAndLog(string email)
         {
             string message = "User Registeration Successful. <br/> Email : " + email;
-            await LogAndEmail(message, "dotnetmastery@gmail.com");
+            await LogAndEmail(message, _configuration.GetValue<string>("AdminEmail"));
         }
 
         private async Task<bool> LogAndEmail(string message, string email)
