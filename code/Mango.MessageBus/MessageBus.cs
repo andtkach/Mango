@@ -5,19 +5,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace Mango.MessageBus
 {
     public class MessageBus : IMessageBus
     {
+        private readonly IConfiguration _configuration;
+        private readonly string _connectionString;
 
-        private string connectionString = "Endpoint=sb://mangoweb.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SECRET";
-
-        public async Task PublishMessage(object message, string topic_queue_Name)
+        public MessageBus(IConfiguration configuration)
         {
-            await using var client = new ServiceBusClient(connectionString);
+            this._configuration = configuration;
+            this._connectionString = _configuration.GetValue<string>("ServiceBus:ConnectionString");
+        }
+        
+        public async Task PublishMessage(object message, string receiverName)
+        {
+            await using var client = new ServiceBusClient(_connectionString);
 
-            ServiceBusSender sender = client.CreateSender(topic_queue_Name);
+            ServiceBusSender sender = client.CreateSender(receiverName);
 
             var jsonMessage = JsonConvert.SerializeObject(message);
             ServiceBusMessage finalMessage = new ServiceBusMessage(Encoding
