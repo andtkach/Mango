@@ -12,10 +12,13 @@ namespace Mango.Services.EmailAPI.Messaging
         private readonly string serviceBusConnectionString;
         private readonly string emailCartQueue;
         private readonly string registerUserQueue;
+        
         private readonly IConfiguration _configuration;
         private readonly EmailService _emailService;
+        
         private readonly string orderCreated_Topic;
-        private readonly string orderCreated_Email_Subscription;
+        private readonly string orderCreatedEmailSubscription;
+        
         private ServiceBusProcessor _emailOrderPlacedProcessor;
         private ServiceBusProcessor _emailCartProcessor;
         private ServiceBusProcessor _registerUserProcessor;
@@ -30,12 +33,12 @@ namespace Mango.Services.EmailAPI.Messaging
             emailCartQueue = _configuration.GetValue<string>("TopicAndQueueNames:EmailCartQueue");
             registerUserQueue = _configuration.GetValue<string>("TopicAndQueueNames:RegisterUserQueue");
             orderCreated_Topic = _configuration.GetValue<string>("TopicAndQueueNames:OrderCreatedTopic");
-            orderCreated_Email_Subscription = _configuration.GetValue<string>("TopicAndQueueNames:OrderCreated_Email_Subscription");
+            orderCreatedEmailSubscription = _configuration.GetValue<string>("TopicAndQueueNames:OrderCreatedEmailSubscription");
 
             var client = new ServiceBusClient(serviceBusConnectionString);
             _emailCartProcessor = client.CreateProcessor(emailCartQueue);
             _registerUserProcessor = client.CreateProcessor(registerUserQueue);
-            _emailOrderPlacedProcessor = client.CreateProcessor(orderCreated_Topic,orderCreated_Email_Subscription);
+            _emailOrderPlacedProcessor = client.CreateProcessor(orderCreated_Topic,orderCreatedEmailSubscription);
         }
 
         public async Task Start()
