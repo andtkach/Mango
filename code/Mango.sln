@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mango.Services.OrderAPI", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mango.Services.RewardAPI", "Mango.Services.RewardAPI\Mango.Services.RewardAPI.csproj", "{FAB2B20F-6B0E-46F7-AF2C-A31897D57E3C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mango.GatewaySolution", "Mango.GatewaySolution\Mango.GatewaySolution.csproj", "{7C0491EC-ABCA-4076-8C83-034DC2CEB825}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mango.Gateway", "Mango.GatewaySolution\Mango.Gateway.csproj", "{7C0491EC-ABCA-4076-8C83-034DC2CEB825}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

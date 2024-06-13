@@ -16,7 +16,7 @@ namespace Mango.Services.EmailAPI.Messaging
         private readonly IConfiguration _configuration;
         private readonly EmailService _emailService;
         
-        private readonly string orderCreated_Topic;
+        private readonly string orderCreatedTopic;
         private readonly string orderCreatedEmailSubscription;
         
         private ServiceBusProcessor _emailOrderPlacedProcessor;
@@ -32,13 +32,13 @@ namespace Mango.Services.EmailAPI.Messaging
 
             emailCartQueue = _configuration.GetValue<string>("TopicAndQueueNames:EmailCartQueue");
             registerUserQueue = _configuration.GetValue<string>("TopicAndQueueNames:RegisterUserQueue");
-            orderCreated_Topic = _configuration.GetValue<string>("TopicAndQueueNames:OrderCreatedTopic");
+            orderCreatedTopic = _configuration.GetValue<string>("TopicAndQueueNames:OrderCreatedTopic");
             orderCreatedEmailSubscription = _configuration.GetValue<string>("TopicAndQueueNames:OrderCreatedEmailSubscription");
 
             var client = new ServiceBusClient(serviceBusConnectionString);
             _emailCartProcessor = client.CreateProcessor(emailCartQueue);
             _registerUserProcessor = client.CreateProcessor(registerUserQueue);
-            _emailOrderPlacedProcessor = client.CreateProcessor(orderCreated_Topic,orderCreatedEmailSubscription);
+            _emailOrderPlacedProcessor = client.CreateProcessor(orderCreatedTopic, orderCreatedEmailSubscription);
         }
 
         public async Task Start()
@@ -56,9 +56,7 @@ namespace Mango.Services.EmailAPI.Messaging
             await _emailOrderPlacedProcessor.StartProcessingAsync();
         }
 
-       
-
-        public async Task Stop()
+       public async Task Stop()
         {
             await _emailCartProcessor.StopProcessingAsync();
             await _emailCartProcessor.DisposeAsync();
@@ -106,9 +104,7 @@ namespace Mango.Services.EmailAPI.Messaging
             {
                 throw;
             }
-
         }
-
         private async Task OnUserRegisterRequestReceived(ProcessMessageEventArgs args)
         {
             var message = args.Message;

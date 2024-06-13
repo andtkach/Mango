@@ -87,7 +87,7 @@ namespace Mango.Web.Controllers
             {
                 userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
             }
-            ResponseDto response = _orderService.GetAllOrder(userId).GetAwaiter().GetResult();
+            ResponseDto response = _orderService.GetAllOrders(userId).GetAwaiter().GetResult();
             if (response != null && response.IsSuccess)
             {
                 list = JsonConvert.DeserializeObject<List<OrderHeaderDto>>(Convert.ToString(response.Result));

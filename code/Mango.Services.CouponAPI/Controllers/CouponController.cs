@@ -90,7 +90,7 @@ namespace Mango.Services.CouponAPI.Controllers
                 {
                     AmountOff = (long)(couponDto.DiscountAmount*100),
                     Name = couponDto.CouponCode,
-                    Currency="usd",
+                    Currency="eur",
                     Id=couponDto.CouponCode,
                 };
 

@@ -24,10 +24,10 @@ namespace Mango.Services.RewardAPI.Messaging
             serviceBusConnectionString = _configuration.GetValue<string>("ServiceBusConnectionString");
 
             orderCreatedTopic = _configuration.GetValue<string>("TopicAndQueueNames:OrderCreatedTopic");
-            orderCreatedRewardSubscription = _configuration.GetValue<string>("TopicAndQueueNames:OrderCreated_Rewards_Subscription");
+            orderCreatedRewardSubscription = _configuration.GetValue<string>("TopicAndQueueNames:OrderCreatedRewardsSubscription");
 
             var client = new ServiceBusClient(serviceBusConnectionString);
-            _rewardProcessor = client.CreateProcessor(orderCreatedTopic,orderCreatedRewardSubscription);
+            _rewardProcessor = client.CreateProcessor(orderCreatedTopic, orderCreatedRewardSubscription);
         }
 
         public async Task Start()
@@ -35,16 +35,12 @@ namespace Mango.Services.RewardAPI.Messaging
             _rewardProcessor.ProcessMessageAsync += OnNewOrderRewardsRequestReceived;
             _rewardProcessor.ProcessErrorAsync += ErrorHandler;
             await _rewardProcessor.StartProcessingAsync();
-
         }
-
-       
-
+        
         public async Task Stop()
         {
             await _rewardProcessor.StopProcessingAsync();
             await _rewardProcessor.DisposeAsync();
-
         }
 
         private async Task OnNewOrderRewardsRequestReceived(ProcessMessageEventArgs args)

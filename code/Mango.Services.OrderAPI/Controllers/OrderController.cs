@@ -138,7 +138,7 @@ namespace Mango.Services.OrderAPI.Controllers
                         PriceData = new SessionLineItemPriceDataOptions
                         {
                             UnitAmount = (long)(item.Price * 100), // $20.99 -> 2099
-                            Currency = "usd",
+                            Currency = "eur",
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
                                 Name = item.Product.Name
@@ -182,7 +182,7 @@ namespace Mango.Services.OrderAPI.Controllers
                 OrderHeader orderHeader = _db.OrderHeaders.First(u => u.OrderHeaderId == orderHeaderId);
 
                 var service = new SessionService();
-                Session session = service.Get(orderHeader.StripeSessionId);
+                Session session = await service.GetAsync(orderHeader.StripeSessionId);
 
                 var paymentIntentService = new PaymentIntentService();
                 PaymentIntent paymentIntent = paymentIntentService.Get(session.PaymentIntentId);
@@ -192,15 +192,17 @@ namespace Mango.Services.OrderAPI.Controllers
                     //then payment was successful
                     orderHeader.PaymentIntentId = paymentIntent.Id;
                     orderHeader.Status = Constants.Status_Approved;
-                    _db.SaveChanges();
+                    await _db.SaveChangesAsync();
+                    
                     RewardsDto rewardsDto = new()
                     {
                         OrderId = orderHeader.OrderHeaderId,
                         RewardsActivity = Convert.ToInt32(orderHeader.OrderTotal),
                         UserId = orderHeader.UserId
                     };
+                    
                     string topicName = _configuration.GetValue<string>("TopicAndQueueNames:OrderCreatedTopic");
-                    await _messageBus.PublishMessage(rewardsDto,topicName);
+                    await _messageBus.PublishMessage(rewardsDto, topicName);
                     _response.Result = _mapper.Map<OrderHeaderDto>(orderHeader);
                 }
 
@@ -233,10 +235,10 @@ namespace Mango.Services.OrderAPI.Controllers
                         };
 
                         var service = new RefundService();
-                        Refund refund = service.Create(options);
+                        Refund refund = await service.CreateAsync(options);
                     }
                     orderHeader.Status = newStatus;
-                    _db.SaveChanges();
+                    await _db.SaveChangesAsync();
                 }
             }
             catch (Exception ex)
