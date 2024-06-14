@@ -1,12 +1,18 @@
 using AutoMapper;
+using HealthChecks.UI.Client;
 using Mango.Services.CouponAPI;
 using Mango.Services.CouponAPI.Data;
 using Mango.Services.CouponAPI.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using HealthChecks.UI.Client;
+using HealthChecks.UI.Configuration;
+using Mango.Services.CouponAPI.Health;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,7 +57,20 @@ builder.AddAppAuthetication();
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddHealthChecks();
+builder.Services.ConfigureHealthChecks(builder.Configuration);
+
 var app = builder.Build();
+
+app.MapHealthChecks("/api/health", new HealthCheckOptions()
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+app.UseHealthChecksUI(delegate (Options options)
+{
+    options.UIPath = "/health-ui";
+});
 
 // Configure the HTTP request pipeline.
 app.UseSwagger();

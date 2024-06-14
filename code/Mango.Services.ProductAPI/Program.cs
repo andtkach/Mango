@@ -3,10 +3,16 @@ using Mango.Services.ProductAPI;
 using Mango.Services.ProductAPI.Data;
 using Mango.Services.ProductAPI.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using HealthChecks.UI.Client;
+using Mango.Services.ProductAPI.Health;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,7 +57,20 @@ builder.AddAppAuthetication();
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddHealthChecks();
+builder.Services.ConfigureHealthChecks(builder.Configuration);
+
 var app = builder.Build();
+
+app.MapHealthChecks("/api/health", new HealthCheckOptions()
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+app.UseHealthChecksUI(delegate (HealthChecks.UI.Configuration.Options options)
+{
+    options.UIPath = "/health-ui";
+});
 
 // Configure the HTTP request pipeline.
 app.UseSwagger();

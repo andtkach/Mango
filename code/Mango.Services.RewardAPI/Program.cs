@@ -1,8 +1,14 @@
+using HealthChecks.UI.Client;
 using Mango.Services.RewardAPI.Data;
 using Mango.Services.RewardAPI.Extension;
 using Mango.Services.RewardAPI.Messaging;
 using Mango.Services.RewardAPI.Services;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using HealthChecks.UI.Client;
+using HealthChecks.UI.Configuration;
+using Mango.Services.RewardAPI.Health;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +29,20 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddHealthChecks();
+builder.Services.ConfigureHealthChecks(builder.Configuration);
+
 var app = builder.Build();
+
+app.MapHealthChecks("/api/health", new HealthCheckOptions()
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+app.UseHealthChecksUI(delegate (Options options)
+{
+    options.UIPath = "/health-ui";
+});
 
 // Configure the HTTP request pipeline.
 app.UseSwagger();

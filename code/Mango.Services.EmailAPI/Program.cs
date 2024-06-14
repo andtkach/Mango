@@ -1,9 +1,15 @@
+using HealthChecks.UI.Client;
 using Mango.Services.EmailAPI.Data;
 using Mango.Services.EmailAPI.Extension;
 using Mango.Services.EmailAPI.Messaging;
 using Mango.Services.EmailAPI.Services;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using HealthChecks.UI.Client;
+using HealthChecks.UI.Configuration;
+using Mango.Services.EmailAPI.Health;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +31,20 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddHealthChecks();
+builder.Services.ConfigureHealthChecks(builder.Configuration);
+
 var app = builder.Build();
+
+app.MapHealthChecks("/api/health", new HealthCheckOptions()
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+app.UseHealthChecksUI(delegate (Options options)
+{
+    options.UIPath = "/health-ui";
+});
 
 // Configure the HTTP request pipeline.
 app.UseSwagger();

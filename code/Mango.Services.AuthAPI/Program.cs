@@ -1,7 +1,11 @@
+using HealthChecks.UI.Client;
+using HealthChecks.UI.Configuration;
 using Mango.MessageBus;
 using Mango.Services.AuthAPI.Data;
+using Mango.Services.AuthAPI.Health;
 using Mango.Services.AuthAPI.Models;
 using Mango.Services.AuthAPI.Service;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,18 +28,29 @@ builder.Services.AddScoped<IMessageBus, MessageBus>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddHealthChecks();
+builder.Services.ConfigureHealthChecks(builder.Configuration);
+
 var app = builder.Build();
 
+app.MapHealthChecks("/api/health", new HealthCheckOptions()
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+app.UseHealthChecksUI(delegate (Options options)
+{
+    options.UIPath = "/health-ui";
+});
+
 // Configure the HTTP request pipeline.
-    app.UseSwagger();
+app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    if (!app.Environment.IsDevelopment())
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Cart API");
-        c.RoutePrefix = string.Empty;
-    }
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Auth API");
+    c.RoutePrefix = string.Empty;
 });
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
